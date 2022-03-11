@@ -1,6 +1,6 @@
-import 'dart:ffi';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:immobilier/features/chats/domain/entities/user_entity.dart';
 import 'package:immobilier/features/chats/domain/usecases/get_create_current_user_usecase.dart';
@@ -32,64 +32,73 @@ class AuthCubit extends Cubit<AuthState> {
       bool isSignIn = await isSignInUsecase.call();
       final uid = await getCurrentUidUsecase.call();
       if (isSignIn) {
-        emit(AuthAuthentificated(uid: uid));
+        emit(Authentificated(uid: uid));
       } else {
-        emit(AuthUnAuthentificated());
+        emit(UnAuthentificated());
       }
+    } on SocketException catch (_) {
+      emit(UnAuthentificated());
     } catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
     }
   }
 
   Future<void> loggetIn() async {
     try {
       final uid = await getCurrentUidUsecase.call();
-      emit(AuthAuthentificated(uid: uid));
+      emit(Authentificated(uid: uid));
     } catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
     }
   }
 
   Future<void> loggetOut() async {
     try {
       await signOutUsecase.call();
-      emit(AuthUnAuthentificated());
-    } catch (_) {}
+      emit(UnAuthentificated());
+    } catch (_) {
+      emit(UnAuthentificated());
+    }
   }
 
   Future<void> signInWithEmail({required UserEntity user}) async {
     try {
-      String uid = await getCurrentUidUsecase.call();
       await signInWithEmailUsecase.call(userEntity: user);
-      emit(AuthAuthentificated(uid: uid));
+      final String uid = await getCurrentUidUsecase.call();
+      emit(Authentificated(uid: uid));
+      print("Connexion réussi Current uid $uid");
     } on SocketException catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
+      emit(AuthSucces());
     } catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
     }
   }
 
   Future<void> signUpWithEmail({required UserEntity user}) async {
     try {
       UserEntity newUser = UserEntity(
-          name: user.name,
-          postName: user.postName,
-          email: user.email,
-          password: user.password,
-          isOnline: true,
-          phoneNumber: user.phoneNumber,
-          profilUrl: " ",
-          uid:" ");
-      await signUpWithEmailUsecase.call(userEntity: newUser).whenComplete(() {
-        getCreateCurrentUserUsecase.call(user: newUser);
-      });
-      // getCreateCurrentUserUsecase.call(user: user);
-      String uid = await getCurrentUidUsecase.call();
-      emit(AuthAuthentificated(uid: uid));
+        name: user.name,
+        postName: user.postName,
+        email: user.email,
+        password: user.password,
+        isOnline: true,
+        phoneNumber: user.phoneNumber,
+        profilUrl: " ",
+        uid: " ",
+        time: Timestamp.now(),
+      );
+      await signUpWithEmailUsecase.call(userEntity: newUser);
+      //aprés que l'enregistrement soit terminer on crée  un utilisateur
+      await getCreateCurrentUserUsecase.call(user: newUser);
+      final String uid = await getCurrentUidUsecase.call();
+      emit(Authentificated(uid: uid));
+      emit(AuthSucces());
+      print("Inscription reussi Current uid $uid");
     } on SocketException catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
     } catch (_) {
-      emit(AuthUnAuthentificated());
+      emit(UnAuthentificated());
     }
   }
 }

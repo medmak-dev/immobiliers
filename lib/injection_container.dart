@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:immobilier/features/chats/data/datasources/firebase_remote_datasource.dart';
 import 'package:immobilier/features/chats/data/datasources/firebase_remote_datasource_impl.dart';
 import 'package:immobilier/features/chats/data/repositories/firebase_repositorie_impl.dart';
 import 'package:immobilier/features/chats/domain/repositories/firebase_repository.dart';
@@ -14,6 +13,8 @@ import 'package:immobilier/features/chats/domain/usecases/get_current_uid_usecas
 import 'package:immobilier/features/chats/domain/usecases/get_my_chat_usecase.dart';
 import 'package:immobilier/features/chats/domain/usecases/get_one_to_one_single_user_chat_chat_channel_usecase.dart';
 import 'package:immobilier/features/chats/domain/usecases/get_text_message_usecase.dart';
+import 'package:immobilier/features/chats/domain/usecases/is_sign_in_usecase.dart';
+import 'package:immobilier/features/chats/domain/usecases/send_text_message_usecase.dart';
 import 'package:immobilier/features/chats/domain/usecases/sign_in_with_email_usecase.dart';
 import 'package:immobilier/features/chats/domain/usecases/sign_out_usecase.dart';
 import 'package:immobilier/features/chats/domain/usecases/sign_up_with_email_usecase.dart';
@@ -42,9 +43,12 @@ Future<void> init() async {
   sl.registerFactory<UserCubit>(() => UserCubit(
       getAllUserUsecase: sl.call(),
       createOneToOneChatChannelUsecase: sl.call()));
+
   sl.registerFactory<MyChatCubit>(() => MyChatCubit(
       getMyChatUsecase: sl.call(), getCurrentUidUsecase: sl.call()));
 
+  sl.registerLazySingleton<SendTextMessageUsecase>(
+      () => SendTextMessageUsecase(repository: sl.call()));
   sl.registerLazySingleton<AddToMyChatUsecase>(
       () => AddToMyChatUsecase(repository: sl.call()));
   sl.registerLazySingleton<CreateOneToOneChatChannelUsecase>(
@@ -63,17 +67,16 @@ Future<void> init() async {
       () => GetTextMessageUsecase(repository: sl.call()));
   sl.registerLazySingleton<SignInWithEmailUsecase>(
       () => SignInWithEmailUsecase(repository: sl.call()));
-  sl.registerLazySingleton<SignInWithEmailUsecase>(
-      () => SignInWithEmailUsecase(repository: sl.call()));
   sl.registerLazySingleton<SignOutUsecase>(
       () => SignOutUsecase(repository: sl.call()));
   sl.registerLazySingleton<SignUpWithEmailUsecase>(
       () => SignUpWithEmailUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => IsSignInUsecase(repository: sl.call()));
 
 //remote data
-  sl.registerLazySingleton(() =>
-      FirebaseRemoteDatatSourceImpl(auth: sl.call(), firestore: sl.call()));
-  
+  sl.registerLazySingleton<FirebaseRemoteDataSource>(() =>
+      FirebaseRemoteDataSourceImpl(auth: sl.call(), firestore: sl.call()));
+
   //repository
   sl.registerLazySingleton<FirebaseRepository>(
       () => FirebaseRepositoryImpl(firebaseRemoteDataSource: sl.call()));

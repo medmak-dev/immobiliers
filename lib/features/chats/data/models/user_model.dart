@@ -10,6 +10,7 @@ class UserModel extends UserEntity {
       required String phoneNumber,
       required String postName,
       required String profilUrl,
+      required Timestamp timestamp,
       required String uid})
       : super(
           password: password,
@@ -20,18 +21,21 @@ class UserModel extends UserEntity {
           isOnline: isOnline,
           profilUrl: profilUrl,
           uid: uid,
+          time: timestamp,
         );
 
   factory UserModel.fromSnapshot(QueryDocumentSnapshot snapshot) {
     return UserModel(
-        email: snapshot["email"],
-        name: snapshot["name"],
-        postName: snapshot["postName"],
-        isOnline: snapshot["isOnline"],
-        password: snapshot["password"],
-        phoneNumber: snapshot["phoneNumber"],
-         profilUrl: snapshot["profilUrl"],
-        uid: snapshot["uid"],);
+      email: snapshot["email"],
+      name: snapshot["name"],
+      postName: snapshot["postName"],
+      isOnline: snapshot["isOnline"],
+      password: snapshot["password"],
+      phoneNumber: snapshot["phoneNumber"],
+      profilUrl: snapshot["profilUrl"],
+      uid: snapshot["uid"],
+      timestamp: snapshot["time"],
+    );
   }
 
   Map<String, dynamic> toDocument() {
@@ -41,9 +45,10 @@ class UserModel extends UserEntity {
       "postName": postName,
       "isOnline": isOnline,
       "password": password,
-      "phneNumber": phoneNumber,
+      "phoneNumber": phoneNumber,
       "profilUrl": profilUrl,
-      "uid":uid,
+      "uid": uid,
+      "time": time
     };
   }
 }

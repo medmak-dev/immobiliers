@@ -14,7 +14,7 @@ class UserCubit extends Cubit<UserState> {
       : super(UserInitiale());
 
   Future<void> getAllUser() async {
-    UserLoading();
+    emit(UserLoading());
     try {
       final userStreamData = getAllUserUsecase.call();
       userStreamData.then((value) {
@@ -35,7 +35,7 @@ class UserCubit extends Cubit<UserState> {
       await createOneToOneChatChannelUsecase.call(uid, otherUid);
     } on SocketException catch (_) {
       emit(UserFaillure());
-    }catch (_) {
+    } catch (_) {
       emit(UserFaillure());
     }
   }

@@ -9,14 +9,20 @@ class AuthInitial extends AuthState {
   List<Object?> get props => [];
 }
 
-class AuthAuthentificated extends AuthState {
+class Authentificated extends AuthState {
   final String uid;
- const  AuthAuthentificated({required this.uid});
+  const Authentificated({required this.uid});
   @override
   List<Object?> get props => [];
 }
 
-class AuthUnAuthentificated extends AuthState {
+class UnAuthentificated extends AuthState {
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [];
+}
+
+class AuthSucces extends AuthState {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }

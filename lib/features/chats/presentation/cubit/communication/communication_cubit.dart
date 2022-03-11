@@ -73,6 +73,7 @@ class CommunicationCubit extends Cubit<CommunicationState> {
       final messageStreamData =
           getTextMessageUsecase.call(channelId: channelId);
       await messageStreamData.then((value) {
+        //on ecoute le flux et on renvoie les message recueilli dans ce flux et on re renvoi sou forme de liste de messsage dans la commuicationState
         value.listen((message) {
           emit(CommunicationLoader(message: message));
         });

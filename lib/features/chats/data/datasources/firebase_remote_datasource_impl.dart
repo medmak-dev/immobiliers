@@ -8,10 +8,10 @@ import 'package:immobilier/features/chats/domain/entities/user_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
+class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
-  FirebaseRemoteDatatSourceImpl({required this.auth, required this.firestore});
+  FirebaseRemoteDataSourceImpl({required this.auth, required this.firestore});
 
   @override
   Future<void> signOut() async {
@@ -20,8 +20,13 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> signUpWithEmail({required UserEntity userEntity}) async {
-    await auth.createUserWithEmailAndPassword(
-        email: userEntity.email, password: userEntity.password);
+    try {
+      final result = await auth.createUserWithEmailAndPassword(
+          email: userEntity.email, password: userEntity.password);
+      print("-----> the response $result");
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -47,7 +52,8 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
               phoneNumber: user.phoneNumber,
               postName: user.postName,
               profilUrl: user.profilUrl,
-              uid: uid)
+              uid: uid,
+              timestamp: Timestamp.now())
           .toDocument();
       if (!userDoc.exists) {
         //si l'utilisateur existe pas on le crée
@@ -61,8 +67,13 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> signInWithEmail({required UserEntity userEntity}) async {
-    auth.signInWithEmailAndPassword(
-        email: userEntity.email, password: userEntity.password);
+    try {
+      final response = await auth.signInWithEmailAndPassword(
+          email: userEntity.email, password: userEntity.password);
+      print("response $response");
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -76,6 +87,7 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
         .collection('users')
         .doc(myChatEntity.recipientUID)
         .collection("myChat");
+    //ici on enregistre enfait les conversation sur les message envoyer dans les deux partenaire: si j'envoie un message a toto, on retrouver a la fois che mois et che toto les meme message
     final myNewChat = MyChatModel(
             // lorsque c'est mois qui envoie le message
             senderName: myChatEntity.senderName,
@@ -106,7 +118,7 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
 
     mychatRef.doc(myChatEntity.recipientUID).get().then((myChatDoc) {
       if (!myChatDoc.exists) {
-        //si le document ,'exixte pas on le crée
+        //si le document n'exixte pas on le crée
         //create
         mychatRef.doc(myChatEntity.recipientUID).set(
             myNewChat); //si c'est le partenaire qui recoit le message venant de moi
@@ -151,17 +163,19 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
       //if not exist
       final _chatChannelId = oneToOneChatChannelRef.doc().id;
       var channelMap = {
-        "channelId": oneToOneChatChannelRef,
+        "channelId": _chatChannelId,
         "channelType": "oneToOneChat",
       };
-      oneToOneChatChannelRef.doc(_chatChannelId).set(channelMap);
+      oneToOneChatChannelRef.doc(_chatChannelId).set(
+          channelMap); //on cree la liste des message et lon y ajoute tout les identifient unique de nos message
       //current user
+      //pour crée un lien entre la liste des chat et des message
       userCollectionRef
           .doc(uid)
           .collection("engagedChatChannel")
           .doc(otherUid)
           .set(channelMap);
-
+//lorsque on voudra les conversation correspondant a une discussion, on recuperera engageChatchannel>ortheruid>oneToOneChat et on parcourera la collection engageChannel avec cette identifient pour recuperé ses messag
       //otherUser
       userCollectionRef
           .doc(otherUid)
@@ -187,6 +201,7 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Stream<List<MyChatEntity>> getMyChat({required String uid}) {
+    //uid c'est  le current uid
     final myChatRef =
         firestore.collection("users").doc(uid).collection("myChat");
     return myChatRef
@@ -201,7 +216,7 @@ class FirebaseRemoteDatatSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<String> getOneToOneSingleUserChatChannel(
-      {required String uid, required String otherUid}) {
+      {required String uid, required String otherUid}) async {
     final userCollection = firestore.collection("users");
     return userCollection
         .doc(uid)

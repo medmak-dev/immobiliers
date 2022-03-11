@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:immobilier/features/chats/domain/usecases/get_current_uid_usecase.dart';
@@ -21,7 +22,7 @@ class MyChatCubit extends Cubit<MyChatState> {
       });
     } on SocketException catch (_) {
       emit(MyChatStateFaillure());
-    }catch (_) {
+    } catch (_) {
       emit(MyChatStateFaillure());
     }
   }

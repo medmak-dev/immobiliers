@@ -7,23 +7,22 @@ abstract class MyChatState extends Equatable {
 
 class MyChatStateInitiale extends MyChatState {
   @override
-  List<Object?> get props => throw  [];
+  List<Object?> get props => throw [];
 }
 
 class MyChatStateLoading extends MyChatState {
   @override
-  List<Object?> get props => throw [];
+  List<Object?> get props => [];
 }
 
 class MyChatStateLoader extends MyChatState {
   final List<MyChatEntity> myChat;
   const MyChatStateLoader({required this.myChat});
   @override
-  List<Object?> get props => throw [myChat];
+  List<Object?> get props => [myChat];
 }
 
-
-class MyChatStateFaillure extends MyChatState{
+class MyChatStateFaillure extends MyChatState {
   @override
-  List<Object?> get props => throw [];
+  List<Object?> get props => [];
 }

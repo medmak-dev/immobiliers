@@ -5,7 +5,7 @@ class SignInWithEmailUsecase {
   final FirebaseRepository repository;
   SignInWithEmailUsecase({required this.repository});
 
-  Future<void> call({required UserEntity userEntity}) {
+  Future<void> call({required UserEntity userEntity}) async {
     return repository.signInWithEmail(userEntity: userEntity);
   }
 }

@@ -36,15 +36,14 @@ class TextMessageModel extends TextMessageEntity {
 
   Map<String, dynamic> toDocument() {
     return {
-      "senderName":senderName,
-      "senderUID":senderUID,
-      "recipientUid":recipientUID,
-      "recipientName":recipientName,
-      "messageId":messageId,
-      "message":message,
-      "time":time,
-      "messageType":messageType,
-
+      "senderName": senderName,
+      "senderUID": senderUID,
+      "recipientUid": recipientUID,
+      "recipientName": recipientName,
+      "messageId": messageId,
+      "message": message,
+      "time": time,
+      "messageType": messageType,
     };
   }
 }

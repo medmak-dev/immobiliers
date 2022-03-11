@@ -7,6 +7,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:804533699433:android:c5b6d71aced582e99f33f8",
+        "android_client_info": {
+          "package_name": "com.example.immobilier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804533699433-7vme9mh9ekh2vjgoup2ubhk24ilhrarg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg7PFoWc46FjyU5u4bGRDcH5pREvKWY6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804533699433-7vme9mh9ekh2vjgoup2ubhk24ilhrarg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:804533699433:android:3436509ae585dda99f33f8",
         "android_client_info": {
           "package_name": "com.medmak.immobilier"
